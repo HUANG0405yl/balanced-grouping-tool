@@ -1,0 +1,13 @@
+{
+  "name": "balanced-grouping-tool",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "create-test-workbook.mjs",
+  "scripts": {
+    "create": "node create-test-workbook.mjs",
+    "verify": "node verify-export.mjs"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  }
+}

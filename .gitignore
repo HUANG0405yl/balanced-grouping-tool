@@ -1,0 +1,3 @@
+node_modules
+work/*.xlsx
+.DS_Store
