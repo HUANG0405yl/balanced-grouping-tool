@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>均衡分组工具</title>
+</head>
+
+<body>
+  <h1>均衡分组工具</h1>
+
+  <input type="file" id="fileInput" />
+
+  <button onclick="process()">开始分组</button>
+
+  <p id="status"></p>
+
+  <!-- 必须放在body里 -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+  <script>
+    async function process() {
+      const file = document.getElementById('fileInput').files[0];
+
+      if (!file) {
+        alert("请先上传 Excel");
+        return;
+      }
+
+      document.getElementById("status").innerText = "处理中...";
+
+      await processExcel(file);
+
+      document.getElementById("status").innerText = "完成，已下载Excel";
+    }
+
+    function processExcel(file) {
+      return file.arrayBuffer().then(buffer => {
+
+        // 1️⃣ 读取 Excel
+        const wb = XLSX.read(buffer);
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+
+        // 2️⃣ 转 JSON
+        const data = XLSX.utils.sheet_to_json(sheet);
+
+        console.log("原始数据", data);
+
+        // 3️⃣ 分组逻辑
+        const result = groupPeople(data);
+
+        // 4️⃣ 生成 Excel
+        const newSheet = XLSX.utils.json_to_sheet(result);
+        const newWb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(newWb, newSheet, "结果");
+
+        // 5️⃣ 下载
+        XLSX.writeFile(newWb, "分组结果.xlsx");
+      });
+    }
+
+    function groupPeople(data) {
+      const companies = ["华东公司", "华南公司", "西北公司"];
+      const genders = ["男", "女"];
+
+      return data.map((item, i) => {
+        return {
+          姓名: item.姓名 || item.name || "",
+          公司: companies[i % 3],
+          性别: genders[i % 2],
+          年龄: 20 + (i % 10)
+        };
+      });
+    }
+  </script>
+
+</body>
+</html>
